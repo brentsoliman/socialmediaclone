@@ -28,5 +28,5 @@ def test_get_post():
         assert schemas.PostResponse(**response.json()[x]).content == test_string[x]
 
 #testing making a post
-def test_post_
+#def test_post_
     
