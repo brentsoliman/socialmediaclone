@@ -6,6 +6,7 @@ from ..database import Base
 
 
 
+
 #edited this one this is a bruteforce approach
 #docker: postgresql://postgres:password123@172.17.0.3:5432/infoBrent
 #normal: postgresql://postgres:password123@localhost/infoBrent
@@ -13,17 +14,18 @@ from ..database import Base
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5003/postgres"
 
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 
 Base.metadata.create_all(bind=engine)
 
 
-#Dependency for making a session 
-def overrid_get_db():
-    db = TestingSessionLocal()
-    try: 
+def override_get_db():
+    try:
+        db = TestingSessionLocal()
         yield db
     finally:
         db.close()
