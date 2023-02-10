@@ -1,8 +1,9 @@
-from fastapi import FastAPI, APIRouter, status, HTTPException,Depends
+from fastapi import FastAPI, APIRouter, status, HTTPException,Depends, Response
 from httpx import post
+from sqlalchemy import false
 from sqlalchemy.orm import Session
 from typing import List
-from .. import schemas, models, oauth2
+from .. import schemas, models, oauth2,utils
 from ..database import get_db
 
 router = APIRouter(
@@ -45,3 +46,37 @@ def make_comment(comment: schemas.Comment,post_id: int, db: Session = Depends(ge
     db.refresh(new_comment)
 
     return new_comment
+
+#updating a comment
+@router.put("/comments/{comment_id}")
+def update_comment(comment_id: int, comment: schemas.Comment,db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+    queried_comment = utils.isExist_comment(comment_id,db)
+
+    comment_username = utils.get_username(queried_comment.first().owner_id,db)
+
+    if (comment_username == current_user.username):
+        queried_comment.update(comment.dict(),synchronize_session=False)
+        db.commit()
+    else:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+            detail="You must be the commenter in order to edit it")
+
+    return queried_comment.first()
+
+@router.delete("/comments/{comment_id}")
+def delete_comment(comment_id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+
+    queried_comment = utils.isExist_comment(comment_id, db)
+
+    comment_username = utils.get_username(queried_comment.first().owner_id, db)
+
+    if (comment_username == current_user.username):
+        queried_comment.delete(synchronize_session=False)
+        db.commit()
+    else:
+        raise Exception(status_code=status.HTTP_403_FORBIDDEN,
+        detail="You can only delete your own comment")
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    

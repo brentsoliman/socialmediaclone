@@ -45,7 +45,7 @@ def making_post(post: schemas.Post, db: Session = Depends(get_db), current_user:
     
 #updating a post
 
-@router.put("/post/{post_id}")
+@router.put("/posts/{post_id}")
 def updating_post(post_id: int, post: schemas.Post, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
     #editing this one
 
@@ -59,20 +59,27 @@ def updating_post(post_id: int, post: schemas.Post, db: Session = Depends(get_db
         db.commit()
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-            detail="Post cannot be edited")
+            detail="You must be the poster in order to edit it")
 
 
     return queried_post.first()
 
-@router.delete("/post/{post_id}")
-def delete_post(post_id: int, post: schemas.Post, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.delete("/posts/{post_id}")
+def delete_post(post_id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
+    
+    
     queried_post = utils.isExist_post(post_id, db)
 
 
-    utils.isUser(queried_post.first().owner_id, current_user.username, db)
+    userExist = utils.isUser(queried_post.first().owner_id, current_user.username, db)
 
-    queried_post.delete(synchronize_session=False)
-    db.commit()
+    if userExist:
+        queried_post.delete(synchronize_session=False)
+        db.commit()
+    else:
+        raise Exception(status_code=status.HTTP_403_FORBIDDEN,
+        detail="You can only delete your own post")
+
 
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)

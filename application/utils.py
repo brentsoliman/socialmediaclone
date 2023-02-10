@@ -1,4 +1,5 @@
-from ctypes import Union
+from typing import Union
+from statistics import mode
 from httpx import post
 from markupsafe import string
 from passlib.context import CryptContext
@@ -17,8 +18,12 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def isExist_user(username: string, db: Session = Depends(get_db)):
-    queried_user = db.query(models.User).filter(models.User.username == username)
+def isExist_user(username: Union [str, None], db: Session = Depends(get_db)):
+    if not username:
+        queried_user = None
+    else:
+        queried_user = db.query(models.User).filter(models.User.username == username)
+        
 
     if not queried_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -29,16 +34,26 @@ def isExist_user(username: string, db: Session = Depends(get_db)):
 def isExist_post(id: int,  db: Session = Depends(get_db)):
     queried_post = db.query(models.Post).filter(models.Post.id == id)
 
-    if not queried_post:
+    if not queried_post.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
             detail="Post does not exist")
         
     return queried_post
 
+def isExist_comment(id: int, db: Session = Depends(get_db)):
+    queried_comment = db.query(models.Comment).filter(models.Comment.id == id)
+
+    if not queried_comment.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+            detail="Comment does not exist")
+
+    return queried_comment
+
 #adding a function to get id based on username
 
 def get_username(id: int, db: Session = Depends(get_db)):
-    queried_user = isExist_user(id, db)
+    user = db.query(models.User).filter(models.User.id == id)
+    queried_user = isExist_user(user.first().username, db)
 
     return queried_user.first().username
 

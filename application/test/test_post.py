@@ -34,5 +34,34 @@ def test_get_post():
         assert schemas.PostResponse(**response.json()[x]).content == test_string[x]
 
 #testing making a post
-#def test_post_
-    
+def test_making_post():
+    response = client.post(
+        "/users/posts",
+        json = {
+            "content":"this the content made by the tester program"
+        },
+        headers ={"Authorization":f"Bearer {token}"}
+    )
+
+    assert response.status_code == 200
+
+
+#testing updaating the post
+def test_update_post():
+    response = client.put(
+        "/posts/3",
+        json ={
+            "content":"this is the update post from the test program"
+        },
+        headers ={"Authorization":f"Bearer {token}"}
+    )
+
+    assert response.status_code == 200
+
+def test_delete_post():
+    response = client.delete(
+        "/posts/3",
+        headers ={"Authorization":f"Bearer {token}"}
+    )
+
+    assert response.status_code == 204

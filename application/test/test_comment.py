@@ -14,15 +14,48 @@ client = TestClient(app)
 
 
 def test_get_post_comment():
-        response = client.get(
+    response = client.get(
         "/posts/2/comments",
         headers ={"Authorization":f"Bearer {token}"} 
     )
 
 
-        test_string = ["brent's another comment","neil's this comment","neil's that comment"]
+    test_string = ["brent's another comment","neil's this comment","neil's that comment"]
 
-        assert response.status_code == 200
+    assert response.status_code == 200
 
-        for x in range(len(response.json())):
-            assert schemas.CommentResponse(**response.json()[x]).content == test_string[x]
+    for x in range(len(response.json())):
+        print(x)
+        print("json size: ", len(response.json()))
+        assert schemas.CommentResponse(**response.json()[x]).content == test_string[x]
+
+def test_make_comment():
+    response = client.post(
+        "/posts/1/comments",
+        json={
+            "content":"this comment was from test"
+        },
+        headers ={"Authorization":f"Bearer {token}"}
+    )
+
+    assert response.status_code == 200
+
+def test_update_comment():
+    response = client.put(
+        "/comments/4",
+        json={
+            "content":"edited comment from test"
+        },
+        headers ={"Authorization":f"Bearer {token}"}
+    )
+
+    assert response.status_code == 200
+
+def test_delete_comment():
+    response = client.delete(
+        "/comments/4",
+        headers ={"Authorization":f"Bearer {token}"}
+    )
+
+    assert response.status_code == 204
+
