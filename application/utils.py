@@ -1,5 +1,6 @@
 from ctypes import Union
 from httpx import post
+from markupsafe import string
 from passlib.context import CryptContext
 from fastapi import Depends, status, HTTPException
 from sqlalchemy.orm import Session
@@ -16,8 +17,8 @@ def get_password_hash(password):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def isExist_user(id: int, db: Session = Depends(get_db)):
-    queried_user = db.query(models.User).filter(models.User.id == id)
+def isExist_user(username: string, db: Session = Depends(get_db)):
+    queried_user = db.query(models.User).filter(models.User.username == username)
 
     if not queried_user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

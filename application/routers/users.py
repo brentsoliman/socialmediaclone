@@ -35,7 +35,11 @@ def getting_one_user(username: str, db: Session = Depends(get_db), current_user:
 #still testing this one
 @router.delete("/users/{username}")
 def delete_user(username: str, db: Session = Depends(get_db), current_user: schemas.User = Depends(oauth2.get_current_user)):
-    queried_user = utils.isExist_user()
+
+    queried_user = utils.isExist_user(username,db)
+
+    queried_user.delete()
+
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

@@ -15,12 +15,12 @@ client = TestClient(app)
 
 def test_get_post_comment():
         response = client.get(
-        "/posts/7/comments",
+        "/posts/2/comments",
         headers ={"Authorization":f"Bearer {token}"} 
     )
 
 
-        test_string = ["brent's another commment","neil's this commment","neil's that commment"]
+        test_string = ["brent's another comment","neil's this comment","neil's that comment"]
 
         assert response.status_code == 200
 
