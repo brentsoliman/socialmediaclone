@@ -1,7 +1,4 @@
 from typing import Union
-from statistics import mode
-from httpx import post
-from markupsafe import string
 from passlib.context import CryptContext
 from fastapi import Depends, status, HTTPException
 from sqlalchemy.orm import Session

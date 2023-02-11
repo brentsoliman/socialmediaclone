@@ -1,5 +1,4 @@
 from fastapi import FastAPI, APIRouter, status, HTTPException,Depends, Response
-from httpx import post
 from sqlalchemy import false
 from sqlalchemy.orm import Session
 from typing import List
