@@ -7,9 +7,7 @@ from ..database import Base
 
 
 
-#edited this one this is a bruteforce approach
-#docker: postgresql://postgres:password123@172.17.0.3:5432/infoBrent
-#normal: postgresql://postgres:password123@localhost/infoBrent
+
 
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5003/postgres"
 
