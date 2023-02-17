@@ -7,7 +7,7 @@ from .routers import users, posts, auth, comments
 
 models.Base.metadata.create_all(bind = engine)
 
-app = FastAPI(openapi_prefix="/api")
+app = FastAPI()
 
 @app.get("/")
 def index():
